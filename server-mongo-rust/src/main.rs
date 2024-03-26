@@ -1,26 +1,23 @@
-
-// use std::env;
+mod db;
+mod student;
 
 use axum::{http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 use dotenv::dotenv;
-use mongodb::{options::ClientOptions, Client};
+use mongodb::bson::doc;
+// use mongodb::{options::ClientOptions, Client};
 use serde_json::json;
 
-// const DB_URL: &str =env::var("DB_URL").unwrap_or("mongodb://localhost:27017".to_string());
+use crate::db::connect_mongo;
 
-async fn connect_mongo(db_url:String) -> Result<Client, mongodb::error::Error> {
-    let client_options = ClientOptions::parse(db_url).await.unwrap();
-    let client = Client::with_options(client_options).unwrap();
-
-    Ok(client)
+struct CreateStudentReq<T> {
+    uid: String,
+    email: String,
+    courses: Vec<T>
 }
+async fn create_document_student(Json(body): Json<CreateStudentReq<String>>) -> impl IntoResponse {
 
-
-async fn _create_collection(client:&Client, db_name:&str, coll_name: &str) {
-    let db = client.database(db_name);
-    db.create_collection(coll_name, None).await.expect("Unable to create Collection");
+    // (StatusCode::CREATED, Json()).into_response()
 }
-
 
 #[tokio::main]
 async fn main() {
@@ -39,7 +36,6 @@ async fn main() {
     let _client = connect_mongo(db_url)
         .await
         .expect("Could not connect to database");
-
 
     let app = Router::new()
         .route("/", get(|| async { (StatusCode::OK, Json(json!({"message": "Rust API Server"}))).into_response() }))
