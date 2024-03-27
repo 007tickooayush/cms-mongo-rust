@@ -35,5 +35,7 @@ pub struct StudentSingleResponse{
 
 #[derive(Serialize, Debug)]
 pub struct StudentListResponse {
-
+    pub status: &'static str,
+    pub results: usize,
+    pub data: Vec<StudentResponse>,
 }

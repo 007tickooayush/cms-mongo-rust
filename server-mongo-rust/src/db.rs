@@ -1,17 +1,21 @@
+use std::str::FromStr;
+use axum::body::HttpBody;
+use bson::Bson::DateTime;
 use chrono::Utc;
-use mongodb::{bson, Client, Collection};
-use mongodb::bson::{doc, Document, to_bson};
-use mongodb::options::ClientOptions;
+use futures::StreamExt;
+use mongodb::{bson, Client, Collection, IndexModel};
+use mongodb::bson::{doc, to_bson, Document, oid::ObjectId};
+use mongodb::options::{ClientOptions, FindOneAndUpdateOptions, FindOptions, IndexOptions, ReturnDocument};
 use serde_json::error::Category;
 use crate::error::MyError;
-use crate::error::MyError::MongoSerializeBsonError;
+use crate::error::MyError::{InvalidIDError, MongoDuplicateError, MongoQueryError, MongoSerializeBsonError, NotFoundError};
 use crate::model::StudentModel;
-use crate::response::StudentResponse;
-use crate::schema::CreateStudentSchema;
+use crate::response::{StudentData, StudentListResponse, StudentResponse, StudentSingleResponse};
+use crate::schema::{CreateStudentSchema, UpdateStudentSchema};
 
 type Result<T> = std::result::Result<T, MyError>;
 
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct DB {
     pub students_collection: Collection<StudentModel>,
     pub collection: Collection<Document>
@@ -58,8 +62,8 @@ impl DB {
     }
 
     fn create_student_doc(&self, body: &CreateStudentSchema, enrolled: bool) -> Result<Document> {
-        let serialized_date = bson::to_bson(body).map_err(MongoSerializeBsonError).unwrap();
-        let document = serialized_date.as_document();
+        let serialized_date = to_bson(body).map_err(MongoSerializeBsonError)?;
+        let document = serialized_date.as_document().unwrap();
         let datetime = Utc::now();
 
         let mut doc_resp = doc! {
@@ -71,5 +75,151 @@ impl DB {
         doc_resp.extend(document.clone());
 
         Ok(doc_resp)
+    }
+}
+
+/// CRUD Operations Functions
+impl DB {
+    pub async fn fetch_students(&self, limit:i64, page: i64) -> Result<StudentListResponse> {
+        let filter = FindOptions::builder()
+            .limit(limit)
+            .skip(u64::try_from((page - 1) * limit).unwrap())
+            .build();
+
+        let mut student_cursor = self
+            .students_collection
+            .find(doc! {},filter)
+            .await
+            .map_err(MongoQueryError)
+            .unwrap();
+
+        let mut json_result: Vec<StudentResponse> = Vec::new();
+
+        while let Some(doc) = student_cursor.next().await {
+            json_result.push(self.doc_to_student(&doc.unwrap()).unwrap())
+        };
+
+        Ok(StudentListResponse {
+            status: "success",
+            results: json_result.len(),
+            data: json_result
+        })
+    }
+
+    pub async fn create_student(&self, body:&CreateStudentSchema) -> Result<StudentSingleResponse> {
+        let enrolled = body.enrolled.to_owned().unwrap();
+
+        let document = self.create_student_doc(body,enrolled).unwrap();
+
+        let options = IndexOptions::builder().unique(true).build();
+
+        let index = IndexModel::builder()
+            .keys(doc! {"uid": 1, })
+            .options(options)
+            .build();
+
+        match self.students_collection.create_index(index, None).await {
+            Ok(_) => {}
+            Err(err) => return Err(MongoQueryError(err)),
+        };
+
+        let insert_result = match self.collection.insert_one(&document,None).await {
+            Ok(result) => result,
+            Err(err) => {
+                if err.to_string().contains("E110000 duplicate key error collection") {
+                    return Err(MongoDuplicateError(err))
+                }
+                return Err(MongoQueryError(err))
+            }
+        };
+
+        let new_id = insert_result.inserted_id.as_object_id().expect("issue with getting id");
+
+        let student_doc = match self
+            .students_collection
+            .find_one(doc! {"_id": new_id}, None)
+            .await {
+            Ok(Some(doc)) => doc,
+            Ok(None) => return Err(NotFoundError(new_id.to_string())),
+            Err(err) => return Err(MongoQueryError(err))
+        };
+
+        Ok(StudentSingleResponse {
+            status: "success",
+            data: StudentData {
+                student: self.doc_to_student(&student_doc).unwrap()
+            }
+        })
+    }
+
+    pub async fn get_single_student(&self, id:&str) -> Result<StudentSingleResponse> {
+        let oid = ObjectId::from_str(id).map_err(|_| InvalidIDError(id.to_owned())).unwrap();
+
+        let student_doc = self.students_collection
+            .find_one(doc! {"_id": oid}, None)
+            .await
+            .map_err(MongoQueryError)
+            .unwrap();
+        match student_doc {
+            Some(doc) => {
+                let student = self.doc_to_student(&doc).unwrap();
+
+                Ok(StudentSingleResponse {
+                    status: "success",
+                    data: StudentData { student }
+                })
+            },
+            None => Err(NotFoundError(id.to_string()))
+        }
+
+    }
+
+    pub async fn edit_student(&self, id:&str, body:&UpdateStudentSchema) -> Result<StudentSingleResponse> {
+        let oid = ObjectId::from_str(id).map_err(|_| InvalidIDError(id.to_owned())).unwrap();
+
+
+        let update = doc! {
+            "$set": bson::to_document(body).map_err(MongoSerializeBsonError).unwrap(),
+        };
+
+        let options = FindOneAndUpdateOptions::builder()
+            .return_document(ReturnDocument::After)
+            .build();
+
+
+        if let Some(doc) = self.students_collection
+            .find_one_and_update(doc! {"_id": oid}, update, options)
+            .await
+            .map_err(MongoQueryError)
+            .unwrap()
+        {
+            let student = self.doc_to_student(&doc).unwrap();
+            let student_response = StudentSingleResponse {
+                status: "success",
+                data: StudentData {
+                    student
+                },
+            };
+
+            Ok(student_response)
+        } else {
+            Err(NotFoundError(id.to_string()))
+        }
+    }
+
+    pub async fn delete_student(&self, id: &str) -> Result<()> {
+        let oid = ObjectId::from_str(id).map_err(|_| InvalidIDError(id.to_owned())).unwrap();
+        let filter = doc! {"_id": oid};
+
+        let result = self.students_collection
+            .delete_one(filter,None)
+            .await
+            .map_err(MongoQueryError)
+            .unwrap();
+
+        match result.deleted_count {
+            0 => Err(NotFoundError(id.to_string())),
+            _ => Ok(())
+        }
     }
 }
