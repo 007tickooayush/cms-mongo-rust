@@ -106,7 +106,7 @@ impl DB {
         })
     }
 
-    pub async fn create_student(&self, body:&CreateStudentSchema) -> Result<StudentSingleResponse> {
+    pub async fn create_student(&self, body:&CreateStudentSchema) -> Result<Option<StudentSingleResponse>> {
         let enrolled = body.enrolled.to_owned().unwrap();
 
         let document = self.create_student_doc(body,enrolled).unwrap();
@@ -144,15 +144,15 @@ impl DB {
             Err(err) => return Err(MongoQueryError(err))
         };
 
-        Ok(StudentSingleResponse {
+        Ok(Some(StudentSingleResponse {
             status: "success",
             data: StudentData {
                 student: self.doc_to_student(&student_doc).unwrap()
             }
-        })
+        }))
     }
 
-    pub async fn get_single_student(&self, id:&str) -> Result<StudentSingleResponse> {
+    pub async fn get_single_student(&self, id:&str) -> Result<Option<StudentSingleResponse>> {
         let oid = ObjectId::from_str(id).map_err(|_| InvalidIDError(id.to_owned())).unwrap();
 
         let student_doc = self.students_collection
@@ -164,17 +164,33 @@ impl DB {
             Some(doc) => {
                 let student = self.doc_to_student(&doc).unwrap();
 
-                Ok(StudentSingleResponse {
+                Ok(Some(StudentSingleResponse {
                     status: "success",
                     data: StudentData { student }
-                })
+                }))
             },
             None => Err(NotFoundError(id.to_string()))
         }
 
     }
 
-    pub async fn edit_student(&self, id:&str, body:&UpdateStudentSchema) -> Result<StudentSingleResponse> {
+    pub async fn delete_student(&self, id: &str) -> Result<Option<()>> {
+        let oid = ObjectId::from_str(id).map_err(|_| InvalidIDError(id.to_owned())).unwrap();
+        let filter = doc! {"_id": oid};
+
+        let result = self.students_collection
+            .delete_one(filter,None)
+            .await
+            .map_err(MongoQueryError)
+            .unwrap();
+
+        match result.deleted_count {
+            0 => Err(NotFoundError(id.to_string())),
+            _ => Ok(Some(()))
+        }
+    }
+
+    pub async fn edit_student(&self, id:&str, body:&UpdateStudentSchema) -> Result<Option<StudentSingleResponse>> {
         let oid = ObjectId::from_str(id).map_err(|_| InvalidIDError(id.to_owned())).unwrap();
 
 
@@ -201,25 +217,9 @@ impl DB {
                 },
             };
 
-            Ok(student_response)
+            Ok(Some(student_response))
         } else {
             Err(NotFoundError(id.to_string()))
-        }
-    }
-
-    pub async fn delete_student(&self, id: &str) -> Result<()> {
-        let oid = ObjectId::from_str(id).map_err(|_| InvalidIDError(id.to_owned())).unwrap();
-        let filter = doc! {"_id": oid};
-
-        let result = self.students_collection
-            .delete_one(filter,None)
-            .await
-            .map_err(MongoQueryError)
-            .unwrap();
-
-        match result.deleted_count {
-            0 => Err(NotFoundError(id.to_string())),
-            _ => Ok(())
         }
     }
 }
