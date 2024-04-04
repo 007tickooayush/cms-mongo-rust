@@ -21,4 +21,4 @@ RUN cargo build --release
 EXPOSE 4000
 # Set the command to run the application
 # CMD ["./target/release/main"]
-CMD ["cargo", "run","--release"]
+CMD ["cargo", "run","--release", "RUST_BACKTRACE=1"]
