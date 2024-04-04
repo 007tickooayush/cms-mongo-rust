@@ -18,3 +18,7 @@ Cargo.toml.orig
 
 # Miscellaneous
 .DS_Store
+
+
+node_modules/
+bun.lockb
