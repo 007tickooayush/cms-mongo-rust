@@ -20,4 +20,5 @@ RUN cargo build --release
 
 EXPOSE 4000
 # Set the command to run the application
-CMD ["./target/release/main"]
+# CMD ["./target/release/main"]
+CMD ["cargo", "run","--release"]
