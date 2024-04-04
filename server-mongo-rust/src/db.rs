@@ -24,7 +24,7 @@ pub struct DB {
 impl DB {
 
     pub async fn connect_mongo() -> Result<DB> { // Result<DB>
-        let mongo_uri = std::env::var("DB_URL").expect("DB_URL must be set");
+        let mongo_uri = std::env::var("DB_URL").unwrap_or("mongodb://localhost:27017/test".to_string());
 
         let db_name = std::env::var("MONGO_INITDB_DATABASE").expect("MONGO_INITDB_DATABASE must be set");
 
