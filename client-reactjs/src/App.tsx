@@ -1,4 +1,4 @@
-import { Container } from '@chakra-ui/react';
+import { Container, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react'
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
 	
 	return (
 		<Container>
-			<h1>Rust + React application for School Administration System</h1>
+			<Text fontSize={'xl'}>Rust + React application for School Administration System</Text>
 		</Container>
 	);
 }
