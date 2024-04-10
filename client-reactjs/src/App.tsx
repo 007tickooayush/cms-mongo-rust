@@ -1,3 +1,4 @@
+import { Container } from '@chakra-ui/react';
 import { useEffect, useState } from 'react'
 
 function App() {
@@ -7,9 +8,9 @@ function App() {
 	});
 	
 	return (
-		<div>
+		<Container>
 			<h1>Rust + React application for School Administration System</h1>
-		</div>
+		</Container>
 	);
 }
 
