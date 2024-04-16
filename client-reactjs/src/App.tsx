@@ -9,7 +9,7 @@ function App() {
 	
 	return (
 		<Container>
-			<Text fontSize={'xl'}>Rust + React application for School Administration System</Text>
+			<Text fontSize={'3xl'}>Rust + React application for School Administration System</Text>
 		</Container>
 	);
 }
