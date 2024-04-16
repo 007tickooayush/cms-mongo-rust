@@ -5,6 +5,8 @@ services:
     build: ./server-mongo-rust
     volumes:
       - ./server-mongo-rust:/app
+    environment:
+      - DB_URL=mongodb://db_mongo:27017/test
     # args:
     #   - DATABASE_URL: mongodb://db_mongo:27020
     ports:

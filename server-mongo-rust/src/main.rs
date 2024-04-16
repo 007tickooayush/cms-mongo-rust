@@ -6,13 +6,10 @@ mod error;
 mod handler;
 mod routes;
 
-use std::fmt::format;
 use std::sync::Arc;
-use axum::{http::StatusCode, response::IntoResponse, routing::get, Json, Router};
 use axum::http::{HeaderValue, Method};
 use axum::http::header::{ACCEPT, AUTHORIZATION, CONTENT_TYPE};
 use dotenv::dotenv;
-use serde::{Deserialize, Serialize};
 use tokio::net::TcpListener;
 use tower_http::cors::CorsLayer;
 use crate::db::DB;
@@ -35,9 +32,11 @@ async fn main() -> Result<(), MyError> {
 
     const PORT:i32 = 4000;
     let origin1 =std::env::var("ORIGIN1").unwrap_or_default();
+    let origin2 =std::env::var("ORIGIN2").unwrap_or_default();
 
     let cors = CorsLayer::new()
         .allow_origin(origin1.as_str().parse::<HeaderValue>().unwrap())
+        .allow_origin(origin2.as_str().parse::<HeaderValue>().unwrap())
         // .allow_origin("*".as_str().parse::<HeaderValue>().unwrap())
         .allow_methods([Method::GET,Method::POST,Method::PATCH,Method::DELETE])
         .allow_credentials(true)

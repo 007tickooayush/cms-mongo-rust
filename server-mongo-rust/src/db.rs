@@ -1,12 +1,12 @@
 use std::str::FromStr;
-use axum::body::HttpBody;
-use bson::Bson::DateTime;
+// use axum::body::HttpBody;
+// use bson::Bson::DateTime;
 use chrono::Utc;
 use futures::StreamExt;
 use mongodb::{bson, Client, Collection, IndexModel};
 use mongodb::bson::{doc, to_bson, Document, oid::ObjectId};
 use mongodb::options::{ClientOptions, FindOneAndUpdateOptions, FindOptions, IndexOptions, ReturnDocument};
-use serde_json::error::Category;
+// use serde_json::error::Category;
 use crate::error::MyError;
 use crate::error::MyError::{InvalidIDError, MongoDuplicateError, MongoQueryError, MongoSerializeBsonError, NotFoundError};
 use crate::model::StudentModel;
@@ -21,16 +21,31 @@ pub struct DB {
     pub collection: Collection<Document>
 }
 
+// let db = match DB::connect_mongo().await {
+//     Ok(db) => db,
+//     Err(_) => {
+//         println!("Failed to establish connection using default connection string. Trying alternate connection string...");
+//         DB::connect_mongo_alternate().await.unwrap()
+//     }
+// };
+
 impl DB {
 
     pub async fn connect_mongo() -> Result<DB> { // Result<DB>
-        let mongo_uri = std::env::var("DB_URL").unwrap_or("mongodb://localhost:27017/test".to_string());
+        let mongo_uri = std::env::var("DB_URL").unwrap();
 
         let db_name = std::env::var("MONGO_INITDB_DATABASE").expect("MONGO_INITDB_DATABASE must be set");
 
         let collection_name =  std::env::var("MONGODB_NOTE_COLLECTION").expect("MONGODB_NOTE_COLLECTION must be set");
 
-        let mut client_options = ClientOptions::parse(mongo_uri).await.expect("Error connecting to Database");
+        // let mut client_options = ClientOptions::parse(mongo_uri).await.expect("Error connecting to Database");
+
+        let mut client_options = match ClientOptions::parse(mongo_uri).await {
+            Ok(db) => db,
+            Err(err) => {
+                return Err(MongoQueryError(err))
+            }
+        };
 
         client_options.app_name = Some(db_name.to_string());
 
