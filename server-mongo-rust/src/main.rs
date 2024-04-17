@@ -31,13 +31,18 @@ async fn main() -> Result<(), MyError> {
 
 
     const PORT:i32 = 4000;
-    let origin1 =std::env::var("ORIGIN1").unwrap_or_default();
-    let origin2 =std::env::var("ORIGIN2").unwrap_or_default();
+    // let origin1 =std::env::var("ORIGIN1").unwrap_or_default();
+    // let origin2 =std::env::var("ORIGIN2").unwrap_or_default();
+
+    let origins = [
+        std::env::var("ORIGIN1").unwrap_or_default().as_str().parse::<HeaderValue>().unwrap(),
+        std::env::var("ORIGIN2").unwrap_or_default().as_str().parse::<HeaderValue>().unwrap()
+    ];
 
     let cors = CorsLayer::new()
-        .allow_origin(origin1.as_str().parse::<HeaderValue>().unwrap())
-        .allow_origin(origin2.as_str().parse::<HeaderValue>().unwrap())
-        // .allow_origin("*".as_str().parse::<HeaderValue>().unwrap())
+        .allow_origin(origins)
+        // .allow_origin(origin1.as_str().parse::<HeaderValue>().unwrap())
+        // .allow_origin(origin2.as_str().parse::<HeaderValue>().unwrap())
         .allow_methods([Method::GET,Method::POST,Method::PATCH,Method::DELETE])
         .allow_credentials(true)
         .allow_headers([AUTHORIZATION,ACCEPT, CONTENT_TYPE]);
