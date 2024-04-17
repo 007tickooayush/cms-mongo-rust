@@ -1,11 +1,18 @@
 import { Container, Text } from '@chakra-ui/react';
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
+import { getAllStudents } from './utils/api';
+import { StudentContext } from './utils/context';
 
 function App() {
 
+	const {studentsList, setStudentsList}:any = useContext(StudentContext);
+
 	useEffect(() => {
-	  console.log('App component startup render')
-	});
+		// setStudentsList([])
+		// console.log('list',studentsList)
+	  	console.log('App component startup render')
+		getAllStudents();
+	},[]);
 	
 	return (
 		<Container>
