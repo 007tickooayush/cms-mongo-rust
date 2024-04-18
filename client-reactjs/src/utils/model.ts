@@ -11,3 +11,5 @@ export const createStudentState = {
 }
 
 export const studentsListState = [];
+
+export type StudentsListState = typeof studentsListState;

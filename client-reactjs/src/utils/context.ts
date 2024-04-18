@@ -1,3 +1,2 @@
-import React, { createContext } from 'react'
-
-export const StudentContext = createContext([]);
+import { createContext, useState } from "react";
+export const StudentContext = createContext({ studentsList: [], setStudentsList: () => {} });
