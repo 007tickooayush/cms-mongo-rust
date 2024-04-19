@@ -1,4 +1,4 @@
-import { CreateStudentSchema } from "./model";
+import { StudentBodySchema, EditStudentSchema } from "./model";
 
 const url: string = "http://localhost:4000/api/";
 
@@ -17,7 +17,7 @@ export const getAllStudents = async () => {
     }
 };
 
-export const createStudent = async (student: CreateStudentSchema) => {
+export const createStudent = async (student: StudentBodySchema) => {
     try {
         const response = await fetch(url + "/students/", {
             method: "POST",
@@ -32,6 +32,27 @@ export const createStudent = async (student: CreateStudentSchema) => {
             console.log('Body:', data);
             return { ...data, status: 201 };
         }
+    } catch (err: any) {
+        console.error("Error occured:", err.toString())
+    }
+};
+
+export const editStudent = async (id: EditStudentSchema, student: StudentBodySchema) => {
+    try {
+        const response = await fetch(url + `/students/:${id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(student)
+        });
+        
+        if(response.ok){
+            const data = await response.json();
+            console.log('Body:', data);
+            return {...data, status: 200};
+        }
+        
     } catch (err: any) {
         console.error("Error occured:", err.toString())
     }

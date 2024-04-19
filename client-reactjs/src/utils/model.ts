@@ -1,7 +1,10 @@
-export type CreateStudentSchema = {
+export type StudentBodySchema = {
     name: string,
     uid: string,
     enrolled: boolean
+};
+export type EditStudentSchema = {
+    id: string
 };
 
 export const createStudentState = {
