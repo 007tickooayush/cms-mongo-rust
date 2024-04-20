@@ -9,7 +9,7 @@ export const getAllStudents = async () => {
         });
         if (response.ok) {
             const data = await response.json();
-            console.log('Students:', data);
+            // console.log('Students:', data);
             return { ...data, status: 200 };
         }
     } catch (err: any) {
@@ -57,3 +57,20 @@ export const editStudent = async (id: EditStudentSchema, student: StudentBodySch
         console.error("Error occured:", err.toString())
     }
 };
+
+export const deleteStudent = async (id: EditStudentSchema) => { 
+    try {
+        const response = await fetch(url + `/students/:${id}`, {
+            method: "DELETE"
+        });
+
+        if(response.ok){
+            const data = await response.json();
+            console.log('Body:', data);
+            return {...data, status: 200};
+        }
+
+    } catch (err: any) {
+        console.error("Error occured:", err.toString())
+    }
+}
