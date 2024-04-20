@@ -69,8 +69,8 @@ impl DB {
             uid: student.uid.to_owned(),
             name: student.name.to_owned(),
             enrolled: student.enrolled.to_owned().unwrap(),
-            createdAt: student.createdAt,
-            updatedAt: student.updatedAt,
+            createdAt: student.createdAt.into(),
+            updatedAt: student.updatedAt.into(),
         };
 
         Ok(student_response)

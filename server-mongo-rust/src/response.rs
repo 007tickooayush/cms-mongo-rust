@@ -1,5 +1,6 @@
-// use chrono::{DateTime, Utc};
-use mongodb::bson::DateTime;
+use chrono::prelude::{DateTime, Utc};
+use mongodb::bson;
+// use mongodb::bson::oid::ObjectId
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -16,10 +17,10 @@ pub struct StudentResponse {
     pub name: String,
     pub uid: String,
     pub enrolled: bool,
-    // #[serde(with = "bson::serde_helpers::chrono_datetime_as_bson_datetime")]
-    pub createdAt: DateTime,
-    // #[serde(with = "bson::serde_helpers::chrono_datetime_as_bson_datetime")]
-    pub updatedAt: DateTime
+    #[serde(with = "bson::serde_helpers::chrono_datetime_as_bson_datetime")]
+    pub createdAt: DateTime<Utc>,
+    #[serde(with = "bson::serde_helpers::chrono_datetime_as_bson_datetime")]
+    pub updatedAt: DateTime<Utc>,
 }
 
 #[derive(Serialize, Debug)]
