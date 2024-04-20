@@ -1,10 +1,16 @@
+export type DateMillis = {
+    $date: {
+        $numberLong: string
+    }
+};
+
 export type StudentType = {
     id: string,
     name: string,
     uid: string,
     enrolled: boolean,
-    createdAt: Date,
-    updatedAt: Date
+    createdAt: DateMillis,
+    updatedAt: DateMillis
 };
 
 export type StudentContextType = {

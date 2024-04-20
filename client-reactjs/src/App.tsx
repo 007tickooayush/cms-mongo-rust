@@ -12,8 +12,11 @@ function App() {
 		console.log('App component startup render')
 		getAllStudents().then((students: StudentsRespSchema) => {
 			setStudentsList(students.data);
-			// students.data.
 			// console.log('Data:', students.data);
+
+			// students.data.forEach((student: StudentType) => {
+			// 	console.log('Student:', new Date(parseInt(student.createdAt.$date.$numberLong)));
+			// });
 		});
 
 	}, []);
