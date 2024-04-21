@@ -5,7 +5,7 @@ use axum::http::StatusCode;
 use axum::Json;
 use axum::response::IntoResponse;
 // use serde_json::json;
-use serde_json::Value;
+use serde_json::{json, Value};
 use crate::AppState;
 // use crate::db::DB;
 use crate::error::MyError;
@@ -56,4 +56,8 @@ pub async fn student_delete_handler(Path(id): Path<String>, State(app_state): St
         Ok(res) => Ok(Json(res)),
         Err(e) => Err(e.into())
     }
+}
+
+pub async fn get_server_check() -> Result<impl IntoResponse, (StatusCode, Json<Value>)> {
+    Ok((StatusCode::FOUND,Json(json!({"message": "Server running"}))))
 }
