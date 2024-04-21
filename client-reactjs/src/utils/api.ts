@@ -1,6 +1,34 @@
 import { StudentBodySchema, EditStudentSchema } from "./model";
 
-const url: string = "http://localhost:4000/api/";
+export let urlList: string[] = [
+    "http://localhost:4000/api/",
+    "http://server-mongo-rust:4000/api/",
+];
+
+let url: string;
+export const setUrl = async () => {
+    try {
+        let connected:boolean = false;
+        for(let link of urlList) {
+            const response = await fetch(link, {
+                method: "GET",
+            });
+            const data = await response.json();
+            // console.log('Data:', data);
+
+            /// using status 302 in backend to check if server is connected because as a generic response 200 is received
+            if (response.status === 302) {
+                url = link;
+                connected = true;
+                break;
+            }
+        }
+        return connected;
+    } catch (err:any) {
+        console.error("Error occured while connecting to server:", err.toString());
+
+    }
+}
 
 export const getAllStudents = async (page?: number, limit?: number) => {
     try {
