@@ -1,5 +1,5 @@
 import { Table, TableContainer, Th, Thead, Tr, Td } from '@chakra-ui/react';
-import React, { useContext, useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { StudentContextType, StudentType, StudentsRespSchema } from '../utils/model';
 import { getAllStudents } from '../utils/api';
 import { StudentContext } from '../utils/context';

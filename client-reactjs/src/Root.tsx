@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { StudentContext } from "./utils/context";
 import { StudentType } from "./utils/model";
 
