@@ -37,7 +37,7 @@ export const getAllStudents = async (page?: number, limit?: number) => {
         });
         if (response.ok) {
             const data = await response.json();
-            // console.log('Students:', data);
+            console.log('Students:', data);
             return { ...data, status: 200 };
         }
     } catch (err: any) {
@@ -47,7 +47,7 @@ export const getAllStudents = async (page?: number, limit?: number) => {
 
 export const createStudent = async (student: StudentBodySchema) => {
     try {
-        const response = await fetch(url + "/students/", {
+        const response = await fetch(url + "students/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -67,7 +67,7 @@ export const createStudent = async (student: StudentBodySchema) => {
 
 export const editStudent = async (id: EditStudentSchema, student: StudentBodySchema) => {
     try {
-        const response = await fetch(url + `/students/:${id}`, {
+        const response = await fetch(url + `students/:${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
@@ -88,7 +88,7 @@ export const editStudent = async (id: EditStudentSchema, student: StudentBodySch
 
 export const deleteStudent = async (id: EditStudentSchema) => {
     try {
-        const response = await fetch(url + `/students/:${id}`, {
+        const response = await fetch(url + `students/:${id}`, {
             method: "DELETE"
         });
 
