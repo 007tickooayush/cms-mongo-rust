@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
 import About from "../components/About";
-import User from "../components/User";
+import Student from "../components/Student";
 import Form from "../components/Form";
 import StudentList from "../components/StudentList";
 import Holder from "../components/Holder";
@@ -20,8 +20,8 @@ const routes: RouteObject[] = [
 				element: <About />
 			},
 			{
-				path: '/user/:id',
-				element: <User />
+				path: '/student/:id',
+				element: <Student />
 			},
 			{
 				path: '/form',
