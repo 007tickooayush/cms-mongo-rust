@@ -45,6 +45,21 @@ export const getAllStudents = async (page?: number, limit?: number) => {
     }
 };
 
+export const getStudent = async (id: EditStudentSchema) => {
+    try {
+        const response = await fetch(url + `students/${id}`, {
+            method: "GET",
+        });
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Student:', data);
+            return { ...data, status: 200 };
+        }
+    } catch (err: any) {
+        console.error("Error occured:", err.toString())
+    }
+}
+
 export const createStudent = async (student: StudentBodySchema) => {
     try {
         const response = await fetch(url + "students/", {
@@ -67,7 +82,7 @@ export const createStudent = async (student: StudentBodySchema) => {
 
 export const editStudent = async (id: EditStudentSchema, student: StudentBodySchema) => {
     try {
-        const response = await fetch(url + `students/:${id}`, {
+        const response = await fetch(url + `students/${id}`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
@@ -88,7 +103,7 @@ export const editStudent = async (id: EditStudentSchema, student: StudentBodySch
 
 export const deleteStudent = async (id: EditStudentSchema) => {
     try {
-        const response = await fetch(url + `students/:${id}`, {
+        const response = await fetch(url + `students/${id}`, {
             method: "DELETE"
         });
 
