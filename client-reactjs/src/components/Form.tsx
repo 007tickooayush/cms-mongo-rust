@@ -15,12 +15,11 @@ const Form = () => {
 		const formObj = new FormData(form);
 		const data: any = Object.fromEntries(formObj.entries());
 
-		// createStudent({...data, enrolled: data.enrolled === 'true' ? true : false}).then((res) => {
-		// 	console.log('Response:', res);
-		// }).catch((err) => {
-		// 	console.error('Error:', err);
-		// });
-
+		createStudent({...data, enrolled: data.enrolled === 'true' ? true : false}).then((res) => {
+			console.log('Response:', res);
+		}).catch((err) => {
+			console.error('Error:', err);
+		});
 		console.log('Form State:', data);
 
 	};
