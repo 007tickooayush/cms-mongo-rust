@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getStudent } from '../utils/api';
 import { StudentBodySchema } from '../utils/model';
+import { Box, Flex } from '@chakra-ui/react';
 
 const User = () => {
     const [student, setStudent] = useState<StudentBodySchema>({ name: '', uid: '', enrolled: false});
@@ -19,12 +20,20 @@ const User = () => {
     },[]);
 
     return (
-        <div>
-            Student id: {id}
-            <div className="">
+        <Flex justifyContent={'space-around'} alignItems={'center'} flexDirection={'column'}>
+            <Box>
+                Student id: {id}
+            </Box>
+            <Box className="">
                 Student name: {student.name}
-            </div>
-        </div>
+            </Box>
+            <Box>
+                Student UID: {student.uid}
+            </Box>
+            <Box>
+                Student enrolled: {student.enrolled ? 'Yes' : 'No'}
+            </Box>
+        </Flex>
     )
 }
 
