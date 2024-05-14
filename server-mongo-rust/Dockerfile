@@ -8,7 +8,7 @@ WORKDIR /app
 # ENV DATABASE_URL=$DATABASE_URL
 
 # Copy the Cargo.toml and Cargo.lock files to the container
-COPY Cargo.toml Cargo.lock ./
+COPY Cargo.toml ./
 
 # Copy the source code to the container
 COPY src ./src
