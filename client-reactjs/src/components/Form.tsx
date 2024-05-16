@@ -1,13 +1,13 @@
 import React, { FormEvent, useEffect, useId, useState } from 'react'
-import { StudentBodySchema } from '../utils/model';
-import { Button, Center, Container, FormControl, FormLabel, HStack, Input, Radio, RadioGroup, Select, VStack } from '@chakra-ui/react';
-import { createStudent } from '../utils/api';
+import { EditStudentBodySchema, StudentBodySchema } from '../utils/model';
+import { Button, Container, FormControl, FormLabel, HStack, Input, Radio, RadioGroup, Select, VStack } from '@chakra-ui/react';
+import { createStudent, editStudent } from '../utils/api';
 
 
 
-const Form = () => {
+const Form = ({ studentId, studentFormData, isEdit }: EditStudentBodySchema) => {
 	const id = useId();
-	const [formData, setFormData] = useState<StudentBodySchema>({ name: 'Random Student', uid: id.replaceAll(':',''), enrolled: false });
+	const [formData, setFormData] = useState<StudentBodySchema>({ name: 'Random Student', uid: id.replaceAll(':', ''), enrolled: false });
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -15,14 +15,33 @@ const Form = () => {
 		const formObj = new FormData(form);
 		const data: any = Object.fromEntries(formObj.entries());
 
-		createStudent({...data, enrolled: data.enrolled === 'true' ? true : false}).then((res) => {
-			console.log('Response:', res);
+		console.log('Form State:', data);
+		if (isEdit) {
+			handleEdit(data);
+		} else {
+			handleCreate(data);
+		}
+
+	};
+	const handleCreate = (data: any) => {
+		createStudent({ ...data, enrolled: data.enrolled === 'true' ? true : false }).then((res) => {
+			console.log('Create Response:', res);
 		}).catch((err) => {
 			console.error('Error:', err);
 		});
-		console.log('Form State:', data);
-
 	};
+	const handleEdit = (data: any) => {
+		editStudent(studentId, { ...data, enrolled: data.enrolled === 'true' ? true : false }).then((res) => {
+			console.log('Edit Response:', res);
+		}).catch((err) => {
+			console.error('Error:', err);
+		});
+	}
+	useEffect(() => {
+		if (isEdit) {
+			setFormData(studentFormData);
+		}
+	}, []);
 
 	return (
 		<div>
