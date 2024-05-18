@@ -1,4 +1,4 @@
-import { StudentBodySchema, EditStudentSchema } from "./model";
+import { StudentBodySchema } from "./model";
 
 export let urlList: string[] = [
     "http://localhost:4000/api/",
@@ -45,7 +45,7 @@ export const getAllStudents = async (page?: number, limit?: number) => {
     }
 };
 
-export const getStudent = async (id: EditStudentSchema) => {
+export const getStudent = async (id: string) => {
     try {
         const response = await fetch(url + `students/${id}`, {
             method: "GET",
@@ -80,7 +80,7 @@ export const createStudent = async (student: StudentBodySchema) => {
     }
 };
 
-export const editStudent = async (id: EditStudentSchema, student: StudentBodySchema) => {
+export const editStudent = async (id: string, student: StudentBodySchema) => {
     try {
         const response = await fetch(url + `students/${id}`, {
             method: "PATCH",
@@ -101,7 +101,7 @@ export const editStudent = async (id: EditStudentSchema, student: StudentBodySch
     }
 };
 
-export const deleteStudent = async (id: EditStudentSchema) => {
+export const deleteStudent = async (id: string) => {
     try {
         const response = await fetch(url + `students/${id}`, {
             method: "DELETE"

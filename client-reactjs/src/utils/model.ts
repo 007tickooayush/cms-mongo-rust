@@ -28,8 +28,14 @@ export type StudentBodySchema = {
     uid: string,
     enrolled: boolean
 };
-export type EditStudentSchema = {
-    id: string
+// export type EditStudentSchema = {
+//     id: string
+// };
+
+export type EditStudentBodySchema = {
+    studentId: string,
+    studentFormData: StudentBodySchema, 
+    isEdit: Boolean
 };
 
 export const createStudentState = {
