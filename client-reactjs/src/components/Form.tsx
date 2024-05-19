@@ -1,13 +1,12 @@
 import React, { FormEvent, useEffect, useId, useState } from 'react'
 import { EditStudentBodySchema, StudentBodySchema } from '../utils/model';
-import { Button, Container, FormControl, FormLabel, HStack, Input, Radio, RadioGroup, Select, VStack } from '@chakra-ui/react';
+import { Alert, AlertIcon, Button, Container, FormControl, FormLabel, HStack, Input, Radio, RadioGroup, Select, VStack } from '@chakra-ui/react';
 import { createStudent, editStudent } from '../utils/api';
-
-
 
 const Form = ({ studentId, studentFormData, isEdit }: EditStudentBodySchema) => {
 	const id = useId();
 	const [formData, setFormData] = useState<StudentBodySchema>({ name: 'Random Student', uid: id.replaceAll(':', ''), enrolled: false });
+	const [showAlert, setShowAlert] = useState(false);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -26,6 +25,7 @@ const Form = ({ studentId, studentFormData, isEdit }: EditStudentBodySchema) => 
 	const handleCreate = (data: any) => {
 		createStudent({ ...data, enrolled: data.enrolled === 'true' ? true : false }).then((res) => {
 			console.log('Create Response:', res);
+			setShowAlert(true);
 		}).catch((err) => {
 			console.error('Error:', err);
 		});
@@ -46,6 +46,12 @@ const Form = ({ studentId, studentFormData, isEdit }: EditStudentBodySchema) => 
 	return (
 		<div>
 			<Container>
+				{showAlert && (
+					<Alert status="success">
+						<AlertIcon />
+						Student has been created!
+					</Alert>
+				)}
 				<form onSubmit={(e: React.FormEvent) => handleSubmit(e)}>
 					<FormControl>
 						<FormLabel htmlFor="name">Name:</FormLabel>

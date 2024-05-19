@@ -25,7 +25,11 @@ const routes: RouteObject[] = [
 			},
 			{
 				path: '/form',
-				element: <Form />
+				element: <Form studentId={""} studentFormData={{
+					name: "",
+					uid: "",
+					enrolled: false
+				}} isEdit={false} />
 			},
 		]
 	}

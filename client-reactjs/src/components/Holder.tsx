@@ -18,7 +18,7 @@ const Holder = () => {
                     </Box>
                     <Box>                
                         <Link to="/form">
-                            Form
+                            Create
                         </Link>
                     </Box>
                 </Flex >
