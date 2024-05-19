@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 
 const StudentList = () => {
     const { studentsList, setStudentsList }: StudentContextType = useContext(StudentContext);
+    // handle paginations
     useEffect(() => {
         setStudentsList([])
         console.log('App component startup render')
