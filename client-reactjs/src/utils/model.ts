@@ -15,7 +15,11 @@ export type StudentType = {
 
 export type StudentContextType = {
     studentsList: StudentType[],
-    setStudentsList: (students: StudentType[]) => void
+    setStudentsList: (students: StudentType[]) => void,
+    page: number,
+    setPage: (page: number) => void,
+    limit: number
+    setLimit: (limit: number) => void
 };
 
 export type StudentsRespSchema = {
