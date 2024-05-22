@@ -22,8 +22,9 @@ const User = () => {
         console.log(id);
     }, []);
 
+    // borderColor={"black"} border={2}
     return (
-        <Box>
+        <Box p={4}>
             <Center m={4}>
                 <Button 
                     onClick={() => setIsEdit(e => !e)}
@@ -85,7 +86,6 @@ const User = () => {
                 )
             }
         </Box>
-
     )
 }
 
