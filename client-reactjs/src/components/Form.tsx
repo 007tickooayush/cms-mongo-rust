@@ -58,6 +58,13 @@ const Form = ({ studentId, studentFormData, isEdit }: EditStudentBodySchema) => 
 					<Alert status={passed ? "success" : "error"}>
 						<AlertIcon />
 						{passed ? "Student has been created!" : "Student not created!"}
+						<Button
+							ml="auto"
+							variant="ghost"
+							onClick={() => setShowAlert(false)}
+						>
+							&times;
+						</Button>
 					</Alert>
 				)}
 				<form onSubmit={(e: React.FormEvent) => handleSubmit(e)}>

@@ -11,7 +11,7 @@ const StudentList = () => {
     const [nextPageStudents, setNextPageStudents] = useState<StudentType[]>([]);
 
     const [showAlert, setShowAlert] = useState(false);
-	const [passed, setPassed] = useState(false);
+    const [passed, setPassed] = useState(false);
 
     useEffect(() => {
         setStudentsList([])
@@ -55,10 +55,17 @@ const StudentList = () => {
                 <Alert status={passed ? "success" : "error"}>
                     <AlertIcon />
                     {passed ? "Student has been deleted!" : "Student not deleted!"}
+                    <Button
+                        ml="auto"
+                        variant="ghost"
+                        onClick={() => setShowAlert(false)}
+                    >
+                        &times;
+                    </Button>
                 </Alert>
             )}
             <Flex justifyContent={'center'} alignItems={'center'} p={2}>
-                <Button width={100} onClick={() => setPage(page - 1)} isDisabled={(page <= 1) ? true: false}>Previous</Button>
+                <Button width={100} onClick={() => setPage(page - 1)} isDisabled={(page <= 1) ? true : false}>Previous</Button>
                 <Text fontWeight={'bold'} ml={4} mr={4}>{page}</Text>
                 <Button width={100} onClick={() => setPage(page + 1)} isDisabled={nextPageStudents.length == 0}>Next</Button>
             </Flex>
