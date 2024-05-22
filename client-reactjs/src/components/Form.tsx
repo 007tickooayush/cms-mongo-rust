@@ -7,6 +7,7 @@ const Form = ({ studentId, studentFormData, isEdit }: EditStudentBodySchema) => 
 	const id = useId();
 	const [formData, setFormData] = useState<StudentBodySchema>({ name: 'Random Student', uid: id.replaceAll(':', ''), enrolled: false });
 	const [showAlert, setShowAlert] = useState(false);
+	const [passed, setPassed] = useState(false);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -25,6 +26,13 @@ const Form = ({ studentId, studentFormData, isEdit }: EditStudentBodySchema) => 
 	const handleCreate = (data: any) => {
 		createStudent({ ...data, enrolled: data.enrolled === 'true' ? true : false }).then((res) => {
 			console.log('Create Response:', res);
+
+			if (res?.status && res?.status == 201) {
+				setPassed(true);
+				// setShowAlert(true);
+			} else {
+				setPassed(false);
+			}
 			setShowAlert(true);
 		}).catch((err) => {
 			console.error('Error:', err);
@@ -47,9 +55,9 @@ const Form = ({ studentId, studentFormData, isEdit }: EditStudentBodySchema) => 
 		<div>
 			<Container>
 				{showAlert && (
-					<Alert status="success">
+					<Alert status={passed ? "success" : "error"}>
 						<AlertIcon />
-						Student has been created!
+						{passed ? "Student has been created!" : "Student not created!"}
 					</Alert>
 				)}
 				<form onSubmit={(e: React.FormEvent) => handleSubmit(e)}>
